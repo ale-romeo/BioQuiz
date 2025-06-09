@@ -52,15 +52,6 @@ npm run dev
 
 L'app sarà disponibile su `http://localhost:5173`.
 
-## 🌐 Deploy su Vercel
-
-1. Fai push su GitHub.
-2. Vai su [https://vercel.com](https://vercel.com), collega il tuo repo e deploya.
-3. Configurazioni automatiche:
-   - **Framework:** Vite
-   - **Build command:** `npm run build`
-   - **Output directory:** `dist`
-
 ## 📊 Formato dei dati (`quizData.ts`)
 
 Ogni domanda ha la seguente struttura:

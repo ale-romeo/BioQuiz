@@ -147,7 +147,7 @@ function App() {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
-          {quizData.map((q, i) => {
+          {quizData.map((_q, i) => {
             const isAnswered = answers[i] !== null;
             const isCorrect = answers[i] === quizData[i].correct;
             const isCurrent = currentQuestionIndex === i;
