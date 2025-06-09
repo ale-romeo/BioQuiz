@@ -1,54 +1,80 @@
-# React + TypeScript + Vite
+# 🧠 Bioinformatics Quiz WebApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Una webapp interattiva per esercitarsi con quiz a scelta multipla su tematiche di bioinformatica, costruita con **React**, **TypeScript** e **TailwindCSS**.
 
-Currently, two official plugins are available:
+## 🚀 Caratteristiche
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📋 Quiz con domande randomiche da una pool predefinita  
+- 🎯 Possibilità di scegliere il numero di domande  
+- 💡 Una domanda alla volta con navigazione tramite barra numerata  
+- ✅ Verifica delle risposte solo alla fine del test  
+- 🔄 Possibilità di iniziare un nuovo test in un click  
+- 📱 Interfaccia responsiva e moderna con TailwindCSS  
 
-## Expanding the ESLint configuration
+## 📦 Struttura del progetto
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+quiz-webapp/
+├── public/
+├── src/
+│   ├── App.tsx              # Componente principale
+│   ├── main.tsx             # Entry point React
+│   ├── data/
+│   │   └── quizData.ts      # Dati quiz formattati
+├── index.html
+├── tailwind.config.js
+├── postcss.config.js
+├── tsconfig.json
+├── package.json
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Installazione locale
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clona il repository:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+git clone https://github.com/tuo-utente/quiz-webapp.git
+cd quiz-webapp
 ```
+
+2. Installa le dipendenze:
+
+```bash
+npm install
+```
+
+3. Avvia il server di sviluppo:
+
+```bash
+npm run dev
+```
+
+L'app sarà disponibile su `http://localhost:5173`.
+
+## 🌐 Deploy su Vercel
+
+1. Fai push su GitHub.
+2. Vai su [https://vercel.com](https://vercel.com), collega il tuo repo e deploya.
+3. Configurazioni automatiche:
+   - **Framework:** Vite
+   - **Build command:** `npm run build`
+   - **Output directory:** `dist`
+
+## 📊 Formato dei dati (`quizData.ts`)
+
+Ogni domanda ha la seguente struttura:
+
+```ts
+{
+  question: "Domanda qui...",
+  options: ["Opzione 1", "Opzione 2", "Opzione 3", "Opzione 4"],
+  correct: "Opzione corretta"
+}
+```
+
+I dati possono essere generati da un CSV usando uno script Python dedicato.
+
+## 📖 Licenza
+
+Distribuito sotto licenza MIT. Vedi `LICENSE` per maggiori dettagli.
