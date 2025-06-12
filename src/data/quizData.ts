@@ -174,9 +174,14 @@ export const fullQuizData = [
     "correct": "False"
   },
   {
-    "question": "Final Results: Risposta Corretta",
-    "options": [],
-    "correct": ""
+    "question": "Which of the following is incorrect about Self-Organizing Maps",
+    "options": [
+      "The data points are initially assigned to the nodes at random",
+      "It starts by defining a number of nodes",
+      "It doesn't involve neural networks",
+      "Clustering by SOMs is in principle similar to the k-means method"
+    ],
+    "correct": "It doesn't involve neural networks"
   },
   {
     "question": "The shotgun approach does not require knowledge of physical mapping of the clone fragments, but rather a robust computer assembly program to join pieces of random fragments into a single, whole-genome sequence",
