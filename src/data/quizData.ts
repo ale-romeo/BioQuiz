@@ -538,7 +538,7 @@ export const fullQuizData = [
       "False",
       "True"
     ],
-    "correct": "True"
+    "correct": "False"
   },
   {
     "question": "Chronic patients should be always treated at home",
