@@ -262,7 +262,7 @@ export const fullQuizData = [
       "is a sequencing technique",
       "is the methodology used by most Life Science researchers"
     ],
-    "correct": "is a sequencing technique"
+    "correct": "Allows to identify relationships between the parts of the system"
   },
   {
     "question": "Reverse engineering, is the processes of extracting knowledge from something and reproducing it based on the extracted information",
