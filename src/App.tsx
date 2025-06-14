@@ -107,7 +107,7 @@ function App() {
           value={numQuestions}
           onChange={(e) => setNumQuestions(Number(e.target.value))}
         >
-          {[5, 10, 20, 30, 40, 67, fullQuizData.length].map((n) => (
+          {[5, 10, 20, 30, 40, 66, fullQuizData.length].map((n) => (
             <option key={n} value={n}>{n}</option>
           ))}
         </select>
