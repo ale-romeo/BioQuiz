@@ -219,25 +219,34 @@ function App() {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
-          {quizData.map((_q, i) => {
+          {quizData.map((q, i) => {
             const isAnswered = answers[i] !== null;
-            const isCorrect = answers[i] === quizData[i].correct;
+            
+            const letterToIndex = { a: 0, b: 1, c: 2, d: 3 } as const;
+            const correctAnswer = q.options[letterToIndex[q.correct as keyof typeof letterToIndex]];
+            
+            const isCorrect = answers[i] === correctAnswer;
             const isCurrent = currentQuestionIndex === i;
+
             return (
               <button
                 key={i}
                 onClick={() => goToQuestion(i)}
                 className={`w-8 h-8 rounded-full border text-sm font-bold
-                  ${isCurrent ? "bg-blue-600 text-white border-blue-700" :
-                    quizFinished && isAnswered && isCorrect ? "bg-green-100 text-green-700 border-green-400" :
-                      quizFinished && isAnswered ? "bg-red-100 text-red-700 border-red-400" :
-                        "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"}`}
+                  ${isCurrent
+                    ? "bg-blue-600 text-white border-blue-700"
+                    : quizFinished && isAnswered && isCorrect
+                    ? "bg-green-100 text-green-700 border-green-400"
+                    : quizFinished && isAnswered
+                    ? "bg-red-100 text-red-700 border-red-400"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"}`}
               >
                 {i + 1}
               </button>
             );
           })}
         </div>
+
 
         {!quizFinished && (
           <div className="mt-6 text-center">
