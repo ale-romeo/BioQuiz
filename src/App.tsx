@@ -1,22 +1,40 @@
 import { useState } from "react";
 import { fullQuizData } from "./data/quizData";
 
+type QuestionType = {
+  question: string;
+  options: string[];
+  correct: string;
+  explanation?: string;
+  super_topic: string;
+};
+
 function App() {
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
   const [numQuestions, setNumQuestions] = useState(5);
-  const [quizData, setQuizData] = useState<{
-    question: string;
-    options: string[];
-    correct: string;
-  }[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [quizData, setQuizData] = useState<QuestionType[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
 
+  const allTopics = Array.from(new Set(fullQuizData.map(q => q.super_topic))).sort();
+
+  const toggleTopic = (topic: string) => {
+    setSelectedTopics(prev =>
+      prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]
+    );
+  };
+
   const startQuiz = () => {
-    const shuffled = [...fullQuizData].sort(() => 0.5 - Math.random());
+    let filtered = fullQuizData;
+    if (selectedTopics.length > 0) {
+      filtered = filtered.filter(q => selectedTopics.includes(q.super_topic));
+    }
+    const shuffled = [...filtered].sort(() => 0.5 - Math.random());
     const selectedQuestions = shuffled.slice(0, numQuestions);
+
     setQuizData(selectedQuestions);
     setAnswers(Array(selectedQuestions.length).fill(null));
     setCurrentQuestionIndex(0);
@@ -49,10 +67,7 @@ function App() {
     }
   };
 
-  const finishQuiz = () => {
-    setQuizFinished(true);
-  };
-
+  const finishQuiz = () => setQuizFinished(true);
   const resetQuiz = () => {
     setQuizStarted(false);
     setQuizFinished(false);
@@ -66,13 +81,27 @@ function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div className="bg-white p-6 rounded-xl shadow-xl text-center max-w-md w-full">
-          <h1 className="text-2xl font-bold mb-4">Seleziona il numero di domande</h1>
+          <h1 className="text-2xl font-bold mb-4">Bioinformatics Quiz</h1>
+          <h2 className="text-xl font-semibold mb-2">Scegli uno o più argomenti</h2>
+          <div className="flex flex-wrap gap-2 mb-4 justify-center max-h-40 overflow-y-auto">
+            {allTopics.map(topic => (
+              <label key={topic} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={selectedTopics.includes(topic)}
+                  onChange={() => toggleTopic(topic)}
+                />
+                <span>{topic}</span>
+              </label>
+            ))}
+          </div>
+          <h2 className="text-xl font-semibold mb-2">Numero di domande</h2>
           <select
             className="mb-4 p-2 border rounded"
             value={numQuestions}
             onChange={(e) => setNumQuestions(Number(e.target.value))}
           >
-            {[5, 10, 20, 30, 40, fullQuizData.length].map((n) => (
+            {[5, 10, 20, 30, 40, fullQuizData.length].map(n => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
@@ -93,7 +122,9 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-xl">
-        <h1 className="text-2xl font-bold mb-4">Domanda {currentQuestionIndex + 1} di {quizData.length}</h1>
+        <h1 className="text-2xl font-bold mb-4">
+          Domanda {currentQuestionIndex + 1} di {quizData.length}
+        </h1>
         <p className="text-lg font-medium mb-6">{currentQuestion.question}</p>
 
         <div className="space-y-3">
@@ -108,10 +139,10 @@ function App() {
                 className={`w-full text-left p-3 rounded-lg border transition-colors duration-150
                   ${quizFinished ?
                     isCorrect ? "bg-green-100 border-green-400 text-green-800" :
-                    isWrong ? "bg-red-100 border-red-400 text-red-800" :
-                    "bg-white border-gray-300 text-gray-800" :
+                      isWrong ? "bg-red-100 border-red-400 text-red-800" :
+                        "bg-white border-gray-300 text-gray-800" :
                     isSelected ? "bg-blue-500 text-white border-blue-700" :
-                    "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"}`}
+                      "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"}`}
               >
                 {opt}
               </button>
@@ -158,8 +189,8 @@ function App() {
                 className={`w-8 h-8 rounded-full border text-sm font-bold
                   ${isCurrent ? "bg-blue-600 text-white border-blue-700" :
                     quizFinished && isAnswered && isCorrect ? "bg-green-100 text-green-700 border-green-400" :
-                    quizFinished && isAnswered ? "bg-red-100 text-red-700 border-red-400" :
-                    "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"}`}
+                      quizFinished && isAnswered ? "bg-red-100 text-red-700 border-red-400" :
+                        "bg-white text-gray-700 border-gray-300 hover:bg-gray-200"}`}
               >
                 {i + 1}
               </button>
