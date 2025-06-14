@@ -148,33 +148,47 @@ function App() {
         <p className="text-lg font-medium mb-6">{currentQuestion.question}</p>
 
         <div className="space-y-3">
-          {currentQuestion.options.map((opt, idx) => {
-            const isSelected = selected === opt;
-            const isCorrect = opt === currentQuestion.correct;
-            const isWrong = answers[currentQuestionIndex] === opt && opt !== currentQuestion.correct;
+          {(() => {
+            const letterToIndex = { a: 0, b: 1, c: 2, d: 3 } as const;
+            const correctAnswer = currentQuestion.options[letterToIndex[currentQuestion.correct as keyof typeof letterToIndex]];
+
             return (
-              <button
-                key={idx}
-                onClick={() => handleAnswer(opt)}
-                className={`w-full text-left p-3 rounded-lg border transition-colors duration-150
-                  ${quizFinished ?
-                    isCorrect ? "bg-green-100 border-green-400 text-green-800" :
-                      isWrong ? "bg-red-100 border-red-400 text-red-800" :
-                        "bg-white border-gray-300 text-gray-800" :
-                    isSelected ? "bg-blue-500 text-white border-blue-700" :
-                      "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"}`}
-              >
-                {opt}
-              </button>
+              <>
+                {currentQuestion.options.map((opt, idx) => {
+                  const isSelected = selected === opt;
+                  const isCorrect = opt === correctAnswer;
+                  const isWrong = answers[currentQuestionIndex] === opt && opt !== correctAnswer;
+
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => handleAnswer(opt)}
+                      className={`w-full text-left p-3 rounded-lg border transition-colors duration-150
+                        ${quizFinished
+                          ? isCorrect
+                            ? "bg-green-100 border-green-400 text-green-800"
+                            : isWrong
+                            ? "bg-red-100 border-red-400 text-red-800"
+                            : "bg-white border-gray-300 text-gray-800"
+                          : isSelected
+                          ? "bg-blue-500 text-white border-blue-700"
+                          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"}`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+
+                {/* Spiegazione mostrata solo a test completato */}
+                {quizFinished && currentQuestion.explanation && (
+                  <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg text-yellow-800 text-sm">
+                    <p><strong>Spiegazione:</strong> {currentQuestion.explanation}</p>
+                    <p className="mt-2"><strong>Risposta corretta:</strong> {correctAnswer}</p>
+                  </div>
+                )}
+              </>
             );
-          })}
-          
-        {/* ✅ Spiegazione visualizzata solo a quiz concluso */}
-        {quizFinished && currentQuestion.explanation && (
-          <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg text-yellow-800 text-sm">
-            <strong>Spiegazione:</strong> {currentQuestion.explanation}
-          </div>
-        )}
+          })()}
         </div>
 
         <div className="flex justify-between mt-6">
