@@ -78,44 +78,64 @@ function App() {
   };
 
   if (!quizStarted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <div className="bg-white p-6 rounded-xl shadow-xl text-center max-w-md w-full">
-          <h1 className="text-2xl font-bold mb-4">Bioinformatics Quiz</h1>
-          <h2 className="text-xl font-semibold mb-2">Scegli uno o più argomenti</h2>
-          <div className="flex flex-wrap gap-2 mb-4 justify-center max-h-40 overflow-y-auto">
-            {allTopics.map(topic => (
-              <label key={topic} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={selectedTopics.includes(topic)}
-                  onChange={() => toggleTopic(topic)}
-                />
-                <span>{topic}</span>
-              </label>
-            ))}
-          </div>
-          <h2 className="text-xl font-semibold mb-2">Numero di domande</h2>
-          <select
-            className="mb-4 p-2 border rounded"
-            value={numQuestions}
-            onChange={(e) => setNumQuestions(Number(e.target.value))}
-          >
-            {[5, 10, 20, 30, 40, fullQuizData.length].map(n => (
-              <option key={n} value={n}>{n}</option>
-            ))}
-          </select>
-          <br />
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="bg-white p-6 rounded-xl shadow-xl text-center max-w-xl w-full">
+        <h1 className="text-3xl font-bold mb-6">Bioinformatics Quiz</h1>
+
+        {/* SuperTopic Selection */}
+        <h2 className="text-xl font-semibold mb-2">Seleziona uno o più argomenti</h2>
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          {allTopics.map(topic => (
+            <button
+              key={topic}
+              onClick={() => toggleTopic(topic)}
+              className={`px-3 py-1 rounded-full border text-sm transition 
+                ${selectedTopics.includes(topic)
+                  ? "bg-blue-600 text-white border-blue-700"
+                  : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"}`}
+            >
+              {topic}
+            </button>
+          ))}
+        </div>
+
+        {/* Numero domande */}
+        <h2 className="text-xl font-semibold mb-2">Numero di domande</h2>
+        <select
+          className="mb-4 p-2 border rounded"
+          value={numQuestions}
+          onChange={(e) => setNumQuestions(Number(e.target.value))}
+        >
+          {[5, 10, 20, 30, 40, fullQuizData.length].map((n) => (
+            <option key={n} value={n}>{n}</option>
+          ))}
+        </select>
+
+        {/* Pulsanti avvio */}
+        <div className="flex justify-center gap-4 flex-wrap">
           <button
             onClick={startQuiz}
             className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             Avvia Test
           </button>
+
+          {/* Shortcut: Quizzone */}
+          <button
+            onClick={() => {
+              setSelectedTopics(["Quizzone"]);
+              setTimeout(startQuiz, 0);  // aspetta che si aggiorni lo stato
+            }}
+            className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            🧪 Quiz Quizzone
+          </button>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   const currentQuestion = quizData[currentQuestionIndex];
 
