@@ -33,7 +33,7 @@ function App() {
       filtered = filtered.filter(q => selectedTopics.includes(q.super_topic));
     }
     const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-    const selectedQuestions = shuffled.slice(0, numQuestions);
+    const selectedQuestions = shuffled.slice(0, Math.min(numQuestions, shuffled.length));
 
     setQuizData(selectedQuestions);
     setAnswers(Array(selectedQuestions.length).fill(null));
@@ -168,6 +168,13 @@ function App() {
               </button>
             );
           })}
+          
+        {/* ✅ Spiegazione visualizzata solo a quiz concluso */}
+        {quizFinished && currentQuestion.explanation && (
+          <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg text-yellow-800 text-sm">
+            <strong>Spiegazione:</strong> {currentQuestion.explanation}
+          </div>
+        )}
         </div>
 
         <div className="flex justify-between mt-6">
