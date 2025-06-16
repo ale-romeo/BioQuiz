@@ -3,13 +3,16 @@ import { fullQuizData } from "./data/quizData";
 
 type QuestionType = {
   question: string;
-  options: string[];
-  correct: string;
+  options?: string[];
+  correct?: string;
   explanation?: string;
+  expected_answer?: string;
   super_topic: string;
+  topic?: string;
 };
 
 function App() {
+  const [mode, setMode] = useState<"quizdb" | "homemade" | null>(null);
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
   const [numQuestions, setNumQuestions] = useState(5);
@@ -18,25 +21,30 @@ function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [answersOpen, setAnswersOpen] = useState<string[]>([]);
 
-  const allTopics = Array.from(new Set(fullQuizData.map(q => q.super_topic))).sort();
-
-  const toggleTopic = (topic: string) => {
-    setSelectedTopics(prev =>
-      prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]
-    );
-  };
+  const isOpenQuestion = (q: QuestionType) =>
+    !!q.expected_answer && !q.options;
 
   const startQuiz = () => {
     let filtered = fullQuizData;
-    if (selectedTopics.length > 0) {
-      filtered = filtered.filter(q => selectedTopics.includes(q.super_topic));
+    if (mode === "quizdb") {
+      filtered = filtered.filter((q) => q.super_topic === "QuizDB");
+    } else if (mode === "homemade" && selectedTopics.length > 0) {
+      filtered = filtered.filter((q) =>
+        selectedTopics.includes(q.topic ?? "")
+      );
     }
+
     const shuffled = [...filtered].sort(() => 0.5 - Math.random());
-    const selectedQuestions = shuffled.slice(0, Math.min(numQuestions, shuffled.length));
+    const selectedQuestions = shuffled.slice(
+      0,
+      Math.min(numQuestions, shuffled.length)
+    );
 
     setQuizData(selectedQuestions);
     setAnswers(Array(selectedQuestions.length).fill(null));
+    setAnswersOpen(Array(selectedQuestions.length).fill(""));
     setCurrentQuestionIndex(0);
     setSelected(null);
     setQuizStarted(true);
@@ -68,74 +76,115 @@ function App() {
   };
 
   const finishQuiz = () => setQuizFinished(true);
+
   const resetQuiz = () => {
+    setMode(null);
     setQuizStarted(false);
     setQuizFinished(false);
     setQuizData([]);
     setAnswers([]);
+    setAnswersOpen([]);
     setCurrentQuestionIndex(0);
     setSelected(null);
+    setSelectedTopics([]);
   };
 
+  const allTopics = Array.from(
+    new Set(
+      fullQuizData
+        .filter((q) => q.super_topic === "Quiz Homemade")
+        .map((q) => q.topic ?? "Altro")
+    )
+  ).sort();
+
   if (!quizStarted) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-6 rounded-xl shadow-xl text-center max-w-xl w-full">
-        <h1 className="text-3xl font-bold mb-6">Bioinformatics Quiz</h1>
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="bg-white p-6 rounded-xl shadow-xl text-center max-w-xl w-full">
+          <h1 className="text-3xl font-bold mb-6">Bioinformatics Quiz</h1>
 
-        {/* SuperTopic Selection */}
-        <h2 className="text-xl font-semibold mb-2">Seleziona uno o più argomenti</h2>
-        <div className="flex flex-wrap justify-center gap-2 mb-4">
-          {allTopics.map(topic => (
-            <button
-              key={topic}
-              onClick={() => toggleTopic(topic)}
-              className={`px-3 py-1 rounded-full border text-sm transition 
-                ${selectedTopics.includes(topic)
-                  ? "bg-blue-600 text-white border-blue-700"
-                  : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"}`}
-            >
-              {topic}
-            </button>
-          ))}
-        </div>
+          {!mode && (
+            <div className="flex justify-center gap-6 mb-6">
+              <button
+                onClick={() => {
+                  setMode("quizdb");
+                  setSelectedTopics(["QuizDB"]);
+                }}
+                className="px-6 py-3 bg-purple-600 text-white rounded hover:bg-purple-700"
+              >
+                🧪 QuizDB
+              </button>
 
-        {/* Numero domande */}
-        <h2 className="text-xl font-semibold mb-2">Numero di domande</h2>
-        <select
-          className="mb-4 p-2 border rounded"
-          value={numQuestions}
-          onChange={(e) => setNumQuestions(Number(e.target.value))}
-        >
-          {[5, 10, 20, 30, 40, 66, fullQuizData.length].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+              <button
+                onClick={() => setMode("homemade")}
+                className="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                🧠 Quiz Homemade
+              </button>
+            </div>
+          )}
 
-        {/* Pulsanti avvio */}
-        <div className="flex justify-center gap-4 flex-wrap">
-          <button
-            onClick={startQuiz}
-            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Avvia Test
-          </button>
+          {mode === "homemade" && (
+            <>
+              <h2 className="text-xl font-semibold mb-2">Scegli uno o più topic</h2>
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                {allTopics.map((topic) => (
+                  <button
+                    key={topic}
+                    onClick={() =>
+                      setSelectedTopics((prev) =>
+                        prev.includes(topic)
+                          ? prev.filter((t) => t !== topic)
+                          : [...prev, topic]
+                      )
+                    }
+                    className={`px-3 py-1 rounded-full border text-sm transition 
+                      ${selectedTopics.includes(topic)
+                        ? "bg-green-600 text-white border-green-700"
+                        : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"}`}
+                  >
+                    {topic}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
-          {/* Shortcut: Quizzone */}
-          <button
-            onClick={() => {
-              setSelectedTopics(["Quizzone"]);
-              setTimeout(startQuiz, 0);  // aspetta che si aggiorni lo stato
-            }}
-            className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-          >
-            🧪 Quiz Quizzone
-          </button>
+          {mode && (
+            <>
+              <h2 className="text-xl font-semibold mb-2">Numero di domande</h2>
+              <select
+                className="mb-4 p-2 border rounded"
+                value={numQuestions}
+                onChange={(e) => setNumQuestions(Number(e.target.value))}
+              >
+                {[5, 10, 20, 30, 40, 66, fullQuizData.length].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+
+              <div className="flex justify-center gap-4 flex-wrap">
+                <button
+                  onClick={startQuiz}
+                  className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Avvia Test
+                </button>
+                <button
+                  onClick={resetQuiz}
+                  className="px-6 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                >
+                  ⬅️ Indietro
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   const currentQuestion = quizData[currentQuestionIndex];
 
@@ -147,49 +196,71 @@ function App() {
         </h1>
         <p className="text-lg font-medium mb-6">{currentQuestion.question}</p>
 
-        <div className="space-y-3">
-          {(() => {
-            const letterToIndex = { a: 0, b: 1, c: 2, d: 3 } as const;
-            const correctAnswer = currentQuestion.options[letterToIndex[currentQuestion.correct as keyof typeof letterToIndex]];
+        {isOpenQuestion(currentQuestion) ? (
+          <div className="space-y-2">
+            <textarea
+              rows={4}
+              className="w-full p-3 border rounded-lg"
+              placeholder="Scrivi la tua risposta..."
+              value={answersOpen[currentQuestionIndex] || ""}
+              onChange={(e) => {
+                const updated = [...answersOpen];
+                updated[currentQuestionIndex] = e.target.value;
+                setAnswersOpen(updated);
+              }}
+              disabled={quizFinished}
+            />
+            {quizFinished && (
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg text-yellow-800 text-sm">
+                <p><strong>Risposta attesa:</strong> {currentQuestion.expected_answer}</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {(() => {
+              const letterToIndex = { a: 0, b: 1, c: 2, d: 3 } as const;
+              const correctAnswer =
+                currentQuestion.options![letterToIndex[currentQuestion.correct as keyof typeof letterToIndex]];
 
-            return (
-              <>
-                {currentQuestion.options.map((opt, idx) => {
-                  const isSelected = selected === opt;
-                  const isCorrect = opt === correctAnswer;
-                  const isWrong = answers[currentQuestionIndex] === opt && opt !== correctAnswer;
+              return (
+                <>
+                  {currentQuestion.options!.map((opt, idx) => {
+                    const isSelected = selected === opt;
+                    const isCorrect = opt === correctAnswer;
+                    const isWrong = answers[currentQuestionIndex] === opt && opt !== correctAnswer;
 
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleAnswer(opt)}
-                      className={`w-full text-left p-3 rounded-lg border transition-colors duration-150
-                        ${quizFinished
-                          ? isCorrect
-                            ? "bg-green-100 border-green-400 text-green-800"
-                            : isWrong
-                            ? "bg-red-100 border-red-400 text-red-800"
-                            : "bg-white border-gray-300 text-gray-800"
-                          : isSelected
-                          ? "bg-blue-500 text-white border-blue-700"
-                          : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"}`}
-                    >
-                      {opt}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleAnswer(opt)}
+                        className={`w-full text-left p-3 rounded-lg border transition-colors duration-150
+                          ${quizFinished
+                            ? isCorrect
+                              ? "bg-green-100 border-green-400 text-green-800"
+                              : isWrong
+                              ? "bg-red-100 border-red-400 text-red-800"
+                              : "bg-white border-gray-300 text-gray-800"
+                            : isSelected
+                            ? "bg-blue-500 text-white border-blue-700"
+                            : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"}`}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
 
-                {/* Spiegazione mostrata solo a test completato */}
-                {quizFinished && currentQuestion.explanation && (
-                  <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg text-yellow-800 text-sm">
-                    <p><strong>Spiegazione:</strong> {currentQuestion.explanation}</p>
-                    <p className="mt-2"><strong>Risposta corretta:</strong> {correctAnswer}</p>
-                  </div>
-                )}
-              </>
-            );
-          })()}
-        </div>
+                  {quizFinished && currentQuestion.explanation && (
+                    <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg text-yellow-800 text-sm">
+                      <p><strong>Spiegazione:</strong> {currentQuestion.explanation}</p>
+                      <p className="mt-2"><strong>Risposta corretta:</strong> {correctAnswer}</p>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        )}
 
         <div className="flex justify-between mt-6">
           <button
@@ -220,12 +291,19 @@ function App() {
 
         <div className="mt-6 flex flex-wrap gap-2">
           {quizData.map((q, i) => {
-            const isAnswered = answers[i] !== null;
-            
+            const isAnswered = isOpenQuestion(q)
+              ? answersOpen[i]?.trim().length > 0
+              : answers[i] !== null;
+
             const letterToIndex = { a: 0, b: 1, c: 2, d: 3 } as const;
-            const correctAnswer = q.options[letterToIndex[q.correct as keyof typeof letterToIndex]];
-            
-            const isCorrect = answers[i] === correctAnswer;
+            const correctAnswer = q.options
+              ? q.options[letterToIndex[q.correct as keyof typeof letterToIndex]]
+              : "";
+
+            const isCorrect = isOpenQuestion(q)
+              ? answersOpen[i]?.trim().length > 0
+              : answers[i] === correctAnswer;
+
             const isCurrent = currentQuestionIndex === i;
 
             return (
@@ -246,7 +324,6 @@ function App() {
             );
           })}
         </div>
-
 
         {!quizFinished && (
           <div className="mt-6 text-center">
