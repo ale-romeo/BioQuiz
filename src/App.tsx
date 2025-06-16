@@ -336,6 +336,17 @@ function App() {
           </div>
         )}
       </div>
+      <footer className="mt-12 text-center text-sm text-gray-500">
+      © {new Date().getFullYear()} Alessandro Romeo •{" "}
+      <a
+        href="https://github.com/ale-romeo"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:underline"
+      >
+        GitHub
+      </a>
+    </footer>
     </div>
   );
 }
