@@ -477,7 +477,7 @@ export const fullQuizData = [
   },
   {
     question: `Why is protein folding important?`,
-    explanation: `Protein folding determines the three-dimensional shape of a protein, which is essential for its biological function. Misfolded proteins can lead to diseases like Alzheimer's or cystic fibrosis.`,
+    expected_answer: `Protein folding determines the three-dimensional shape of a protein, which is essential for its biological function. Misfolded proteins can lead to diseases like Alzheimer's or cystic fibrosis.`,
     super_topic: `QuizDB`,
   },
   {
@@ -545,7 +545,7 @@ export const fullQuizData = [
   },
   {
     question: `What is the codon and what does it do?`,
-    explanation: `A codon is a triplet of nucleotides in mRNA that corresponds to a specific amino acid or a stop signal during protein synthesis. It plays a fundamental role in translating genetic information into proteins.`,
+    expected_answer: `A codon is a triplet of nucleotides in mRNA that corresponds to a specific amino acid or a stop signal during protein synthesis. It plays a fundamental role in translating genetic information into proteins.`,
     super_topic: `QuizDB`,
   },
   {
